@@ -184,10 +184,10 @@
     <!-- Semantic Alpha Thesis -->
     <h2>Semantic Alpha</h2>
     <p>
-      Markets are driven by narratives, context, and information asymmetry — not just numbers. The Journal Node captures this edge by applying large language models to extract actionable trading signals from unstructured data: earnings calls, filings, social commentary, and macro research.
+      Each frontier LLM encodes a different compression of human financial knowledge. Querying multiple models with identical market data produces novel alpha uncorrelated with traditional quantitative signals. When independent models converge on a directional thesis, that convergence is itself a measurable signal.
     </p>
     <p>
-      This is Semantic Alpha — the thesis that persistent, compounding returns come from systematically processing the meaning behind market information faster and more consistently than any human can. The Journal Node operationalizes this thesis into a continuous analytical pipeline.
+      This is the LLM Consensus Hypothesis: reliability-weighted convergence of model outputs — measured by the Semantic Conviction Score (SCS) — correlates positively with forward price movement, particularly when inter-model variance is low. Journal Node operationalizes this thesis into a continuous analytical pipeline with on-chain provenance.
     </p>
 
     <!-- Analytical Modes -->
@@ -195,27 +195,27 @@
 
     <div class="mode-grid">
       <div class="mode">
-        <div class="mode-label">Mode A — Macro Research</div>
+        <div class="mode-label">Mode A — Three-Agent Debate</div>
         <p>
-          Synthesizes top-down macro indicators, central bank signals, and cross-asset flows into a directional market thesis. Output: sector and factor tilts with conviction scores.
+          A Bull Catalyst Scout and Bear Risk Auditor produce directional scores, then a Semantic Arbiter synthesizes both into a balanced SCS. If the bull/bear spread exceeds 60, recursive research triggers a verification pass. Output: directional conviction score with structured bull/bear rationale.
         </p>
       </div>
       <div class="mode">
-        <div class="mode-label">Mode B — Earnings &amp; Filings</div>
+        <div class="mode-label">Mode B — Peer-Anchored Valuation</div>
         <p>
-          Parses earnings transcripts, 10-K/10-Q filings, and guidance revisions to surface mispriced fundamentals. Output: per-ticker sentiment deltas and estimate drift signals.
+          Identifies four peer companies, then queries up to 8 models to estimate fair market value. Outlier detection flags estimates beyond 1 standard deviation. Output: Valuation Anchor Composite (VAC) — a reliability-weighted trimmed mean of model estimates.
         </p>
       </div>
       <div class="mode">
-        <div class="mode-label">Mode C — Social Sentiment</div>
+        <div class="mode-label">Mode C — Stochastic Stress Test</div>
         <p>
-          Monitors Twitter/X, Reddit, and Discord for shifts in crowd positioning and narrative momentum. Output: sentiment velocity scores and contrarian alert flags.
+          A single model is queried 5 times at varying temperatures (0.2 – 0.7) to measure output consistency. The Stability Coefficient (CV) classifies results as HIGH_STABILITY, LOW_RELIABILITY, or UNRELIABLE. Output: conviction stability score and temperature-sensitivity profile.
         </p>
       </div>
       <div class="mode">
-        <div class="mode-label">Mode D — Technical Context</div>
+        <div class="mode-label">Mode D — Vision + Contrarian Trap</div>
         <p>
-          Applies LLM-interpreted pattern recognition over price action, volume profiles, and volatility structure. Output: regime labels and key level annotations for trade framing.
+          A vision-capable model transcribes chart screenshots into structured JSON, then up to 8 models provide technical recommendations. A trap detector evaluates price/volume divergence, RSI exhaustion, upper wicks, and stop-run patterns. Output: directional call with trap probability score.
         </p>
       </div>
     </div>
@@ -223,7 +223,7 @@
     <!-- Workflow Diagram -->
     <h2>Trade Ticket Workflow</h2>
     <p>
-      Each analytical mode feeds into a unified trade ticket that tracks the full lifecycle of a position — from entry signal to close — with every step anchored on-chain.
+      Opening a trade creates an immutable ticket capturing the asset, direction, entry price, mode used, model consensus, and SCS score. Five fields lock permanently at creation — modelConsensus, scsScoreAtEntry, modeUsed, userAlignment, and signalPriceAtEntry — ensuring the accuracy feedback loop operates on honest, unaltered data.
     </p>
 
     <div class="flow">
@@ -234,35 +234,37 @@
         <div class="flow-box">Mode D</div>
       </div>
       <div class="flow-arrow">↓</div>
-      <div class="flow-box">Trade Ticket Generated</div>
+      <div class="flow-box">Semantic Conviction Score (SCS)</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-box">Trade Ticket — Immutable Fields Locked</div>
       <div class="flow-arrow">↓</div>
       <div class="flow-row">
-        <div class="flow-box">Entry Signal</div>
+        <div class="flow-box">Entry</div>
         <div class="flow-arrow">→</div>
         <div class="flow-box">Position Open</div>
         <div class="flow-arrow">→</div>
         <div class="flow-box">Exit / Close</div>
       </div>
       <div class="flow-arrow">↓</div>
-      <div class="flow-box">On-Chain Receipt &amp; Feedback Loop</div>
+      <div class="flow-box">SHA-256 Hash → On-Chain Anchor</div>
       <div class="flow-arrow">↓</div>
-      <div class="flow-box">Performance data feeds back into future analysis</div>
+      <div class="flow-box">Prediction Score → Model Reliability Update (R_i)</div>
     </div>
 
     <p>
-      The on-chain receipt creates a verifiable, immutable record of every trade decision. Over time, the feedback loop refines each mode's output, compounding accuracy and trust.
+      Every analytical output receives a deterministic SHA-256 hash anchored to the Post Fiat network as a memo transaction — tamper-proof provenance proving when the analysis occurred and that its content is unaltered. On closure, each ticket's outcome updates the contributing models' reliability scores, creating a flywheel that compounds signal quality over time.
     </p>
 
     <!-- PFT Token Utility -->
     <h2>PFT Token Utility</h2>
     <p>
-      The PFT token is the native unit of coordination across the Post Fiat network. Within the Journal Node, it serves several functions:
+      PFT implements a performance-based fee model aligned with user outcomes. The system profits only when users profit cumulatively.
     </p>
     <ul>
-      <li>Transaction Fees — PFT is consumed to anchor trade tickets and analytical outputs on-chain.</li>
-      <li>Minting — New PFT is minted as rewards for validated, high-quality analytical contributions to the network.</li>
-      <li>Staking — Node operators stake PFT to signal commitment and earn priority access to network resources.</li>
-      <li>Access Gating — Certain advanced modes and historical data queries require a minimum PFT balance.</li>
+      <li>Performance Fee — 5% of profitable signal moves, charged only when a signal proves correct within its observation window.</li>
+      <li>High-Water Mark — Users with a net-negative cumulative track record pay zero fees. Charges resume only after returning to net-positive.</li>
+      <li>Timeframe Windows — Signals remain open for evaluation based on trade horizon: 24h for 1D, 7 days for 1W, 30 days for 1M.</li>
+      <li>On-Chain Anchoring — PFT is consumed to anchor trade tickets and SHA-256 hashed outputs as memo transactions on the Post Fiat network.</li>
     </ul>
 
     <!-- CTA -->
