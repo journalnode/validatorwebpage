@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Journal Node — Post Fiat</title>
+
+  <style>
+    :root{
+      --bg:#fff;
+      --fg:#000;
+      --muted:#333;
+      --border:rgba(0,0,0,.18);
+    }
+
+    *{margin:0;padding:0;box-sizing:border-box;}
+
+    html{
+      background:var(--bg);
+      color:var(--fg);
+    }
+
+    body{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      padding: 48px 20px 80px;
+      line-height:1.6;
+    }
+
+    .container{
+      width: min(720px, 100%);
+    }
+
+    /* Back link */
+    .back{
+      font-size:13px;
+      color:var(--muted);
+      text-decoration:underline;
+      text-underline-offset:3px;
+      transition:opacity .15s ease;
+    }
+    .back:hover{opacity:.6;}
+
+    /* Page title */
+    h1{
+      font-size:22px;
+      font-weight:600;
+      letter-spacing:1px;
+      margin:32px 0 8px;
+    }
+
+    .subtitle{
+      font-size:13px;
+      color:var(--muted);
+      margin-bottom:48px;
+    }
+
+    /* Section headers */
+    h2{
+      font-size:13px;
+      letter-spacing:1.5px;
+      text-transform:uppercase;
+      margin:48px 0 12px;
+    }
+
+    p, li{
+      font-size:14px;
+      color:var(--muted);
+    }
+
+    p{margin-bottom:12px;}
+
+    /* Boxes for modes */
+    .mode-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-top:12px;
+    }
+    @media(max-width:540px){
+      .mode-grid{grid-template-columns:1fr;}
+    }
+
+    .mode{
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:16px;
+    }
+    .mode-label{
+      font-size:13px;
+      font-weight:600;
+      letter-spacing:1px;
+      text-transform:uppercase;
+      margin-bottom:6px;
+      color:var(--fg);
+    }
+    .mode p{
+      font-size:13px;
+      margin-bottom:0;
+    }
+
+    /* Flow diagram */
+    .flow{
+      margin:20px 0;
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:24px 20px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:6px;
+      font-size:13px;
+      color:var(--muted);
+    }
+    .flow-row{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:center;
+    }
+    .flow-box{
+      border:1px solid var(--border);
+      border-radius:8px;
+      padding:8px 14px;
+      font-size:12px;
+      text-align:center;
+    }
+    .flow-arrow{
+      font-size:16px;
+      color:var(--muted);
+    }
+
+    /* Utility list */
+    ul{
+      list-style:none;
+      margin-top:8px;
+    }
+    ul li{
+      padding:6px 0;
+      border-bottom:1px solid var(--border);
+      font-size:13px;
+    }
+    ul li:last-child{border-bottom:none;}
+
+    /* CTA */
+    .cta{
+      display:inline-block;
+      margin-top:32px;
+      font-size:14px;
+      color:var(--muted);
+      text-decoration:underline;
+      text-underline-offset:3px;
+      padding:12px 20px;
+      border:1px solid var(--border);
+      border-radius:12px;
+      transition:all .15s ease;
+    }
+    .cta:hover{
+      background:rgba(0,0,0,.04);
+      border-color:rgba(0,0,0,.35);
+    }
+
+    /* Divider */
+    hr{
+      border:none;
+      border-top:1px solid var(--border);
+      margin:48px 0 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <a class="back" href="/">← Back to Validator</a>
+
+    <h1>Journal Node</h1>
+    <div class="subtitle">Semantic Alpha for the Post Fiat Network</div>
+
+    <!-- Semantic Alpha Thesis -->
+    <h2>Semantic Alpha</h2>
+    <p>
+      Each frontier LLM encodes a different compression of human financial knowledge. Querying multiple models with identical market data produces novel alpha uncorrelated with traditional quantitative signals. When independent models converge on a directional thesis, that convergence is itself a measurable signal.
+    </p>
+    <p>
+      This is the LLM Consensus Hypothesis: reliability-weighted convergence of model outputs — measured by the Semantic Conviction Score (SCS) — correlates positively with forward price movement, particularly when inter-model variance is low. Journal Node operationalizes this thesis into a continuous analytical pipeline with on-chain provenance.
+    </p>
+
+    <!-- Analytical Modes -->
+    <h2>Four Analytical Modes</h2>
+
+    <div class="mode-grid">
+      <div class="mode">
+        <div class="mode-label">Mode A — Three-Agent Debate</div>
+        <p>
+          A Bull Catalyst Scout and Bear Risk Auditor produce directional scores, then a Semantic Arbiter synthesizes both into a balanced SCS. If the bull/bear spread exceeds 60, recursive research triggers a verification pass. Output: directional conviction score with structured bull/bear rationale.
+        </p>
+      </div>
+      <div class="mode">
+        <div class="mode-label">Mode B — Peer-Anchored Valuation</div>
+        <p>
+          Identifies four peer companies, then queries up to 8 models to estimate fair market value. Outlier detection flags estimates beyond 1 standard deviation. Output: Valuation Anchor Composite (VAC) — a reliability-weighted trimmed mean of model estimates.
+        </p>
+      </div>
+      <div class="mode">
+        <div class="mode-label">Mode C — Stochastic Stress Test</div>
+        <p>
+          A single model is queried 5 times at varying temperatures (0.2 – 0.7) to measure output consistency. The Stability Coefficient (CV) classifies results as HIGH_STABILITY, LOW_RELIABILITY, or UNRELIABLE. Output: conviction stability score and temperature-sensitivity profile.
+        </p>
+      </div>
+      <div class="mode">
+        <div class="mode-label">Mode D — Vision + Contrarian Trap</div>
+        <p>
+          A vision-capable model transcribes chart screenshots into structured JSON, then up to 8 models provide technical recommendations. A trap detector evaluates price/volume divergence, RSI exhaustion, upper wicks, and stop-run patterns. Output: directional call with trap probability score.
+        </p>
+      </div>
+    </div>
+
+    <!-- Workflow Diagram -->
+    <h2>Trade Ticket Workflow</h2>
+    <p>
+      Opening a trade creates an immutable ticket capturing the asset, direction, entry price, mode used, model consensus, and SCS score. Five fields lock permanently at creation — modelConsensus, scsScoreAtEntry, modeUsed, userAlignment, and signalPriceAtEntry — ensuring the accuracy feedback loop operates on honest, unaltered data.
+    </p>
+
+    <div class="flow">
+      <div class="flow-row">
+        <div class="flow-box">Mode A</div>
+        <div class="flow-box">Mode B</div>
+        <div class="flow-box">Mode C</div>
+        <div class="flow-box">Mode D</div>
+      </div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-box">Semantic Conviction Score (SCS)</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-box">Trade Ticket — Immutable Fields Locked</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-row">
+        <div class="flow-box">Entry</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">Position Open</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">Exit / Close</div>
+      </div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-box">SHA-256 Hash → On-Chain Anchor</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-box">Prediction Score → Model Reliability Update (R_i)</div>
+    </div>
+
+    <p>
+      Every analytical output receives a deterministic SHA-256 hash anchored to the Post Fiat network as a memo transaction — tamper-proof provenance proving when the analysis occurred and that its content is unaltered. On closure, each ticket's outcome updates the contributing models' reliability scores, creating a flywheel that compounds signal quality over time.
+    </p>
+
+    <!-- PFT Token Utility -->
+    <h2>PFT Token Utility</h2>
+    <p>
+      PFT implements a performance-based fee model aligned with user outcomes. The system profits only when users profit cumulatively.
+    </p>
+    <ul>
+      <li>Performance Fee — 5% of profitable signal moves, charged only when a signal proves correct within its observation window.</li>
+      <li>High-Water Mark — Users with a net-negative cumulative track record pay zero fees. Charges resume only after returning to net-positive.</li>
+      <li>Timeframe Windows — Signals remain open for evaluation based on trade horizon: 24h for 1D, 7 days for 1W, 30 days for 1M.</li>
+      <li>On-Chain Anchoring — PFT is consumed to anchor trade tickets and SHA-256 hashed outputs as memo transactions on the Post Fiat network.</li>
+    </ul>
+
+    <!-- CTA -->
+    <hr />
+    <h2>Get Started</h2>
+    <p>
+      The Journal Node runs through Discord. Add the bot to your server to start generating trade signals and anchoring your research on-chain.
+    </p>
+    <a class="cta"
+       href="https://discord.com/oauth2/authorize?client_id=1470535834934575360&permissions=277025770560&integration_type=0&scope=bot+applications.commands"
+       target="_blank"
+       rel="noopener">
+      Add Journal Node to Discord →
+    </a>
+
+  </div>
+</body>
+</html>
