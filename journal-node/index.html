@@ -3,17 +3,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Journal Node | Validator Audit Agent | wizbubba</title>
-  <meta name="description" content="Public explainer for Journal Node, an Agent on the Post Fiat Task Node and the wizbubba LLM-optimization suite. Learn the /audit workflow, supported models, expected gist output, and how validators should use the report.">
+  <title>Journal Node | Audit Suite | wizbubba</title>
+  <meta name="description" content="Public explainer for Journal Node, an Agent on the Post Fiat Task Node and the wizbubba LLM-optimization suite. Review the Journal Node Audit Suite, including the live /audit flow and the coming-soon /projaudit track.">
   <link rel="canonical" href="https://pft.wizbubba.xyz/journal-node">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Journal Node | Validator Audit Agent">
-  <meta property="og:description" content="Launch the public Journal Node agent, submit one validator webpage URL, choose ChatGPT 5.5 or Claude Opus 4.7, and receive a public gist audit report.">
+  <meta property="og:title" content="Journal Node | Audit Suite">
+  <meta property="og:description" content="Review the Journal Node Audit Suite: /audit is live for validator webpage scoring, and /projaudit is the coming-soon project audit track.">
   <meta property="og:url" content="https://pft.wizbubba.xyz/journal-node">
   <meta property="og:image" content="https://pft.wizbubba.xyz/assets/journal-node-agent-icon.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Journal Node | Validator Audit Agent">
-  <meta name="twitter:description" content="Public explainer for the Post Fiat validator webpage audit agent by wizbubba.">
+  <meta name="twitter:title" content="Journal Node | Audit Suite">
+  <meta name="twitter:description" content="Public explainer for the Journal Node Audit Suite by wizbubba.">
   <meta name="theme-color" content="#0f1210">
   <style>
     :root {
@@ -270,6 +270,7 @@
     }
 
     .workflow-grid,
+    .suite-grid,
     .use-grid,
     .stats-grid {
       display: grid;
@@ -278,6 +279,10 @@
     }
 
     .workflow-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .suite-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
@@ -307,6 +312,28 @@
       display: grid;
       gap: 14px;
       background: var(--panel-strong);
+    }
+
+    .resource-list,
+    .resource-list div {
+      min-width: 0;
+    }
+
+    .resource-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .resource-list dt {
+      font-family: var(--mono);
+      font-size: 0.9rem;
+      color: var(--ink);
+    }
+
+    .resource-list dd {
+      margin: 4px 0 0;
+      color: var(--muted);
     }
 
     .inline-link {
@@ -349,6 +376,7 @@
       <div class="topbar-nav">
         <a class="pill-link" href="/">Home</a>
         <a class="pill-link" href="/change-log/">Change Log</a>
+        <a class="pill-link" href="#audit-suite">Audit Suite</a>
         <a class="pill-link" href="#audit-flow">/audit Flow</a>
         <a class="pill-link" href="#use-the-report">Use the Report</a>
         <a class="pill-link" href="https://tasknode.postfiat.org/inbox?address=rpQrSa3Hh5grVQ4jaasmxbgYfwCv9g86KR" target="_blank" rel="noopener">Launch Agent</a>
@@ -359,26 +387,27 @@
       <div class="hero-copy">
         <p class="eyebrow">Agent on the Post Fiat Task Node</p>
         <h1>Journal Node</h1>
-        <p class="lede">Journal Node is an Agent on the Post Fiat Task Node and the LLM-optimization suite by Wizbubba: investment thesis tooling and Post Fiat validator webpage scoring tools. Its current public command, <code>/audit</code>, is built for validators who want a hard-scored review of one public validator webpage before they start rewriting.</p>
+        <p class="lede">Journal Node is an Agent on the Post Fiat Task Node and the LLM-optimization suite by Wizbubba. Its public framing is now the Journal Node Audit Suite: <code>/audit</code> is live for validator webpage scoring, and <code>/projaudit</code> is the coming-soon track for broader project audit work.</p>
         <div class="hero-actions">
           <a class="button button-primary" href="https://tasknode.postfiat.org/inbox?address=rpQrSa3Hh5grVQ4jaasmxbgYfwCv9g86KR" target="_blank" rel="noopener">Launch Journal Node</a>
-          <a class="button button-secondary" href="#audit-flow">See the audit workflow</a>
+          <a class="button button-secondary" href="#audit-suite">See the Audit Suite</a>
         </div>
         <div class="signal-strip" aria-label="Journal Node summary">
+          <span class="signal">Suite: <code>/audit</code> live, <code>/projaudit</code> coming soon</span>
           <span class="signal">Input: one public validator webpage URL</span>
           <span class="signal">Models: ChatGPT 5.5 or Claude Opus 4.7</span>
-          <span class="signal">Output: public GitHub gist audit report</span>
+          <span class="signal">Output: public GitHub gist audit artifacts</span>
         </div>
       </div>
 
       <aside class="hero-side">
         <div class="hero-card">
           <img src="/assets/journal-node-agent-icon.png" alt="Journal Node agent icon">
-          <p>Journal Node packages the validator audit as a public agent flow: bring one live webpage URL, choose a model, and get a structured gist report that an AI coding tool can ingest directly.</p>
+          <p>Journal Node packages audit work as a public agent flow with structured artifacts that an AI coding tool can ingest directly: live validator webpage scoring now, broader project audit framing next.</p>
         </div>
         <div class="hero-card hero-note">
           <h2>Who this is for</h2>
-          <p>Post Fiat validators who already have a public webpage and want a concrete scoring pass across LLM readability, trust signals, structural clarity, and scoring readiness.</p>
+          <p>Validators and project operators who want audit outputs with explicit headings, bounded claims, concrete evidence links, and rewrite-ready artifacts for humans and coding agents.</p>
         </div>
       </aside>
     </header>
@@ -388,20 +417,64 @@
         <div class="section-head">
           <p class="section-kicker">Agent scope</p>
           <h2 id="what-it-does">What Journal Node does</h2>
-          <p class="section-summary">The validator audit agent applies a deterministic rubric to a validator webpage and returns a report built for action, not vague encouragement. The canonical context emphasizes harsh scoring, evidence packaging, claim boundedness, machine readability, trust framing, and clear next-step rewrites.</p>
+          <p class="section-summary">The Journal Node Audit Suite turns audit work into structured artifacts built for action, not vague encouragement. The operating context emphasizes harsh scoring, evidence packaging, claim boundedness, machine readability, trust framing, and clear next-step rewrites.</p>
         </div>
         <div class="stats-grid">
           <article class="stat">
-            <h3>One command</h3>
-            <p>The current public flow is <code>/audit</code>. It focuses on the validator webpage audit product rather than generic Journal Node copy.</p>
+            <h3>Two suite tracks</h3>
+            <p>The Audit Suite currently exposes one live command, <code>/audit</code>, and one announced next command, <code>/projaudit</code>.</p>
           </article>
           <article class="stat">
             <h3>One page in</h3>
-            <p>Submit one public validator webpage URL as the input target. The agent audits what is actually on the live page, not what you intended to publish.</p>
+            <p>For the live flow, submit one public validator webpage URL as the input target. The agent audits what is actually on the live page, not what you intended to publish.</p>
           </article>
           <article class="stat">
-            <h3>One gist out</h3>
-            <p>You receive a public GitHub gist report with criterion scores, framing analysis, and concrete rewrite instructions.</p>
+            <h3>Structured artifacts out</h3>
+            <p>The suite publishes linked gist artifacts: live scoring outputs now for <code>/audit</code>, and decision and positioning materials now for the coming <code>/projaudit</code> track.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="audit-suite" aria-labelledby="audit-suite-heading">
+        <div class="section-head">
+          <p class="section-kicker">Audit catalog</p>
+          <h2 id="audit-suite-heading">Journal Node Audit Suite</h2>
+          <p class="section-summary">This section is structured as a direct reference block for humans and LLMs. Each command entry names its status, scope, and source artifacts with explicit links.</p>
+        </div>
+        <div class="suite-grid">
+          <article class="card" aria-labelledby="audit-card-heading">
+            <h3 id="audit-card-heading"><code>/audit</code></h3>
+            <p><strong>Status:</strong> Live</p>
+            <p><strong>Scope:</strong> Audits one live public validator webpage URL and returns a structured public gist report with scoring, diagnosis, and rewrite instructions.</p>
+            <dl class="resource-list">
+              <div>
+                <dt>Methodology</dt>
+                <dd><a class="inline-link" href="https://gist.github.com/journalnode/fc0e4005772889cb188a1ad6c2b3a824" target="_blank" rel="noopener">Canonical <code>/audit</code> methodology gist</a></dd>
+              </div>
+              <div>
+                <dt>Sample Output: OpenAI ChatGPT 5.5</dt>
+                <dd><a class="inline-link" href="https://gist.github.com/journalnode/26fdf3f26b09c556272055742d299cc8" target="_blank" rel="noopener">Latest sample gist output</a></dd>
+              </div>
+              <div>
+                <dt>Sample Output: Claude Opus 4.7</dt>
+                <dd><a class="inline-link" href="https://gist.github.com/journalnode/98494033da7ae397b42129402fbf660f" target="_blank" rel="noopener">Latest sample gist output</a></dd>
+              </div>
+            </dl>
+          </article>
+          <article class="card" aria-labelledby="projaudit-card-heading">
+            <h3 id="projaudit-card-heading"><code>/projaudit</code></h3>
+            <p><strong>Status:</strong> Coming soon</p>
+            <p><strong>Scope:</strong> Extends the suite toward project-level audit framing. The linked memos document the current decision path and positioning direction.</p>
+            <dl class="resource-list">
+              <div>
+                <dt>Day 1 Decision Memo</dt>
+                <dd><a class="inline-link" href="https://gist.github.com/journalnode/fe2b8199db4a3d140c7ec5cf829a0e69" target="_blank" rel="noopener">Read the Day 1 <code>/projaudit</code> decision memo</a></dd>
+              </div>
+              <div>
+                <dt>Day 2 Positioning Brief</dt>
+                <dd><a class="inline-link" href="https://gist.github.com/journalnode/10d95700e3a361774c0d91aa76efa6e2" target="_blank" rel="noopener">Read the Day 2 <code>/projaudit</code> positioning brief</a></dd>
+              </div>
+            </dl>
           </article>
         </div>
       </section>
@@ -482,8 +555,8 @@
 
       <section class="callout" aria-labelledby="launch-heading">
         <p class="section-kicker">Launch instruction</p>
-        <h2 id="launch-heading">Run the public validator audit agent</h2>
-        <p>Open the public agents interface, launch Journal Node as an Agent on the Post Fiat Task Node, submit one public validator webpage URL, choose <code>ChatGPT 5.5</code> or <code>Claude Opus 4.7</code>, and wait for the public gist report.</p>
+        <h2 id="launch-heading">Run the Journal Node Audit Suite</h2>
+        <p>Open the public agents interface, launch Journal Node as an Agent on the Post Fiat Task Node, and use <code>/audit</code> for a live validator webpage review. The current live path accepts one public validator webpage URL, supports <code>ChatGPT 5.5</code> and <code>Claude Opus 4.7</code>, and returns a public gist report.</p>
         <div class="hero-actions">
           <a class="button button-primary" href="https://tasknode.postfiat.org/inbox?address=rpQrSa3Hh5grVQ4jaasmxbgYfwCv9g86KR" target="_blank" rel="noopener">Go to Journal Node</a>
           <a class="button button-secondary" href="https://gist.github.com/journalnode/fc0e4005772889cb188a1ad6c2b3a824" target="_blank" rel="noopener">Read canonical audit context</a>
