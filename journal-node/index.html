@@ -4,17 +4,56 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Journal Node | Audit Suite | wizbubba</title>
-  <meta name="description" content="Public explainer for Journal Node, an Agent on the Post Fiat Task Node and the wizbubba LLM-optimization suite. Review the Journal Node Audit Suite, including the live /audit flow and the coming-soon /projaudit track.">
+  <meta name="description" content="Journal Node Audit Suite reference: /audit is live for validator webpage scoring; /projaudit uses the canonical v0.2.0 crypto-project audit spec and is in active implementation.">
   <link rel="canonical" href="https://pft.wizbubba.xyz/journal-node">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Journal Node | Audit Suite">
-  <meta property="og:description" content="Review the Journal Node Audit Suite: /audit is live for validator webpage scoring, and /projaudit is the coming-soon project audit track.">
+  <meta property="og:description" content="Journal Node Audit Suite: /audit is live, and /projaudit v0.2.0 is specified with implementation in progress.">
   <meta property="og:url" content="https://pft.wizbubba.xyz/journal-node">
   <meta property="og:image" content="https://pft.wizbubba.xyz/assets/journal-node-agent-icon.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Journal Node | Audit Suite">
-  <meta name="twitter:description" content="Public explainer for the Journal Node Audit Suite by wizbubba.">
+  <meta name="twitter:description" content="/audit is live. /projaudit canonical spec v0.2.0 is published and implementation is in progress.">
   <meta name="theme-color" content="#0f1210">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Journal Node Audit Suite",
+    "url": "https://pft.wizbubba.xyz/journal-node",
+    "dateModified": "2026-06-20",
+    "description": "Canonical public reference for the Journal Node Audit Suite commands.",
+    "mainEntity": {
+      "@type": "ItemList",
+      "name": "Journal Node Audit Suite commands",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "item": {
+            "@type": "SoftwareApplication",
+            "name": "/audit",
+            "applicationCategory": "Validator webpage LLM-readability audit",
+            "applicationStatus": "Live",
+            "url": "https://gist.github.com/journalnode/fc0e4005772889cb188a1ad6c2b3a824"
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "item": {
+            "@type": "SoftwareApplication",
+            "name": "/projaudit",
+            "applicationCategory": "Crypto project LLM-readability audit",
+            "applicationStatus": "Build in progress",
+            "softwareVersion": "0.2.0",
+            "url": "https://gist.github.com/journalnode/0fd802b1791ee736953b49ceb6363399"
+          }
+        }
+      ]
+    }
+  }
+  </script>
   <style>
     :root {
       --bg: #f5f1e8;
@@ -387,13 +426,13 @@
       <div class="hero-copy">
         <p class="eyebrow">Agent on the Post Fiat Task Node</p>
         <h1>Journal Node</h1>
-        <p class="lede">Journal Node is an Agent on the Post Fiat Task Node and the LLM-optimization suite by Wizbubba. Its public framing is now the Journal Node Audit Suite: <code>/audit</code> is live for validator webpage scoring, and <code>/projaudit</code> is the coming-soon track for broader project audit work.</p>
+        <p class="lede">Journal Node is an Agent on the Post Fiat Task Node and the LLM-optimization suite by Wizbubba. The Journal Node Audit Suite includes <code>/audit</code>, live for validator webpage scoring, and <code>/projaudit</code>, specified at v0.2.0 for crypto-project audits with implementation in progress.</p>
         <div class="hero-actions">
           <a class="button button-primary" href="https://tasknode.postfiat.org/inbox?address=rpQrSa3Hh5grVQ4jaasmxbgYfwCv9g86KR" target="_blank" rel="noopener">Launch Journal Node</a>
           <a class="button button-secondary" href="#audit-suite">See the Audit Suite</a>
         </div>
         <div class="signal-strip" aria-label="Journal Node summary">
-          <span class="signal">Suite: <code>/audit</code> live, <code>/projaudit</code> coming soon</span>
+          <span class="signal">Suite: <code>/audit</code> live, <code>/projaudit</code> v0.2.0 build in progress</span>
           <span class="signal">Input: one public validator webpage URL</span>
           <span class="signal">Models: ChatGPT 5.5 or Claude Opus 4.7</span>
           <span class="signal">Output: public GitHub gist audit artifacts</span>
@@ -403,7 +442,7 @@
       <aside class="hero-side">
         <div class="hero-card">
           <img src="/assets/journal-node-agent-icon.png" alt="Journal Node agent icon">
-          <p>Journal Node packages audit work as a public agent flow with structured artifacts that an AI coding tool can ingest directly: live validator webpage scoring now, broader project audit framing next.</p>
+          <p>Journal Node packages audit work as a public agent flow with structured artifacts that an AI coding tool can ingest directly: live validator webpage scoring now, with the canonical v0.2.0 crypto-project audit specification published for the next command.</p>
         </div>
         <div class="hero-card hero-note">
           <h2>Who this is for</h2>
@@ -422,7 +461,7 @@
         <div class="stats-grid">
           <article class="stat">
             <h3>Two suite tracks</h3>
-            <p>The Audit Suite currently exposes one live command, <code>/audit</code>, and one announced next command, <code>/projaudit</code>.</p>
+            <p>The Audit Suite exposes <code>/audit</code> as a live command and <code>/projaudit</code> as a v0.2.0-specified command currently being built.</p>
           </article>
           <article class="stat">
             <h3>One page in</h3>
@@ -430,7 +469,7 @@
           </article>
           <article class="stat">
             <h3>Structured artifacts out</h3>
-            <p>The suite publishes linked gist artifacts: live scoring outputs now for <code>/audit</code>, and decision and positioning materials now for the coming <code>/projaudit</code> track.</p>
+            <p>The suite publishes linked gist artifacts: live methodology and scoring outputs for <code>/audit</code>, plus the canonical v0.2.0 specification, system prompt, and report template for <code>/projaudit</code>.</p>
           </article>
         </div>
       </section>
@@ -463,16 +502,24 @@
           </article>
           <article class="card" aria-labelledby="projaudit-card-heading">
             <h3 id="projaudit-card-heading"><code>/projaudit</code></h3>
-            <p><strong>Status:</strong> Coming soon</p>
-            <p><strong>Scope:</strong> Extends the suite toward project-level audit framing. The linked memos document the current decision path and positioning direction.</p>
+            <p><strong>Status:</strong> v0.2.0 spec published; build in progress</p>
+            <p><strong>Scope:</strong> Audits crypto-project surfaces such as homepages, whitepapers, tokenomics pages, and documentation using a six-dimension LLM-readability rubric. The v0.2.0 specification is the current single source of truth.</p>
             <dl class="resource-list">
               <div>
-                <dt>Day 1 Decision Memo</dt>
-                <dd><a class="inline-link" href="https://gist.github.com/journalnode/fe2b8199db4a3d140c7ec5cf829a0e69" target="_blank" rel="noopener">Read the Day 1 <code>/projaudit</code> decision memo</a></dd>
+                <dt>Canonical Specification — v0.2.0</dt>
+                <dd><a class="inline-link" href="https://gist.github.com/journalnode/0fd802b1791ee736953b49ceb6363399" target="_blank" rel="noopener">Read the canonical <code>/projaudit</code> v0.2.0 specification (Day 34)</a></dd>
               </div>
               <div>
-                <dt>Day 2 Positioning Brief</dt>
-                <dd><a class="inline-link" href="https://gist.github.com/journalnode/10d95700e3a361774c0d91aa76efa6e2" target="_blank" rel="noopener">Read the Day 2 <code>/projaudit</code> positioning brief</a></dd>
+                <dt>Canonical Agent Prompt</dt>
+                <dd><a class="inline-link" href="https://gist.github.com/journalnode/9968cd4cde064f6085eed2ef97ade7ac" target="_blank" rel="noopener">Read <code>PA-V020-001</code>, the v0.2.0 agent prompt (Day 32)</a></dd>
+              </div>
+              <div>
+                <dt>Fixed Report Template</dt>
+                <dd><a class="inline-link" href="https://gist.github.com/journalnode/ee51b613dd534701ff21501e7ecf2c56" target="_blank" rel="noopener">Read the v0.2.0 output contract (Day 33)</a></dd>
+              </div>
+              <div>
+                <dt>Archive — superseded v0.1.0</dt>
+                <dd><a class="inline-link" href="https://gist.github.com/journalnode/9b61eccb7794f21f48c249fd1471670d" target="_blank" rel="noopener">View the retired v0.1.0 specification for lineage only</a></dd>
               </div>
             </dl>
           </article>
