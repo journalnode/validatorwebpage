@@ -39,6 +39,16 @@ export async function createAuditGist(
   return body;
 }
 
+export function slugify(value: string, fallback = "report"): string {
+  return (
+    String(value || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 60) || fallback
+  );
+}
+
 export async function checkGitHubAuth(env: Env, config: RuntimeConfig): Promise<Record<string, unknown>> {
   if (!env.GITHUB_TOKEN) {
     return {

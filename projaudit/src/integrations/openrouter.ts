@@ -2,8 +2,17 @@ import type { Env, RuntimeConfig } from "../env";
 
 export interface ChatMessage {
   role: "system" | "user" | "assistant";
-  content: string;
+  content: string | OpenRouterContentPart[];
 }
+
+export type OpenRouterContentPart =
+  | string
+  | {
+      type?: string;
+      text?: string | OpenRouterContentPart[];
+      content?: string | OpenRouterContentPart[];
+      image_url?: { url: string };
+    };
 
 export interface OpenRouterChatRequest {
   messages: ChatMessage[];
@@ -16,7 +25,7 @@ export async function createOpenRouterChatCompletion(
   env: Env,
   config: RuntimeConfig,
   request: OpenRouterChatRequest
-): Promise<unknown> {
+): Promise<string> {
   if (!env.OPENROUTER_API_KEY) {
     throw new Error("OPENROUTER_API_KEY is not configured");
   }
@@ -33,7 +42,27 @@ export async function createOpenRouterChatCompletion(
     })
   });
 
-  return parseOpenRouterResponse(response);
+  const body = await parseOpenRouterResponse(response);
+  return extractOpenRouterContent(body);
+}
+
+export async function callOpenRouterModel(
+  env: Env,
+  config: RuntimeConfig,
+  modelId: string,
+  systemPrompt: string,
+  userMessage: string,
+  options: { maxTokens?: number; temperature?: number; imageBase64?: string; imageUrl?: string } = {}
+): Promise<string> {
+  return createOpenRouterChatCompletion(env, config, {
+    model: modelId,
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: buildMessageContent(userMessage, options) }
+    ],
+    max_tokens: options.maxTokens ?? 500,
+    temperature: options.temperature
+  });
 }
 
 export async function checkOpenRouterAuth(env: Env, config: RuntimeConfig): Promise<Record<string, unknown>> {
@@ -68,6 +97,112 @@ function openRouterHeaders(apiKey: string, config: RuntimeConfig): HeadersInit {
     "http-referer": config.openRouterSiteUrl,
     "x-title": config.openRouterAppTitle
   };
+}
+
+function buildMessageContent(
+  userMessage: string,
+  options: { imageBase64?: string; imageUrl?: string } = {}
+): string | OpenRouterContentPart[] {
+  if (options.imageBase64) {
+    return [
+      { type: "text", text: userMessage },
+      { type: "image_url", image_url: { url: `data:image/png;base64,${options.imageBase64}` } }
+    ];
+  }
+
+  if (options.imageUrl) {
+    return [
+      { type: "text", text: userMessage },
+      { type: "image_url", image_url: { url: options.imageUrl } }
+    ];
+  }
+
+  return userMessage;
+}
+
+export function extractOpenRouterContent(data: unknown): string {
+  const record = data as {
+    choices?: Array<{
+      message?: { content?: unknown };
+      text?: unknown;
+    }>;
+  };
+  const choice = record.choices?.[0] ?? null;
+  const content = choice?.message?.content;
+
+  if (typeof content === "string") {
+    return content;
+  }
+
+  if (content && typeof content === "object" && !Array.isArray(content)) {
+    const text = extractTextFromContentPart(content).trim();
+    if (text) {
+      return text;
+    }
+  }
+
+  if (Array.isArray(content)) {
+    const text = content.map(extractTextFromContentPart).filter(Boolean).join("\n").trim();
+    if (text) {
+      return text;
+    }
+  }
+
+  if (typeof choice?.text === "string" && choice.text.trim()) {
+    return choice.text.trim();
+  }
+
+  const contentType = Array.isArray(content) ? "array" : typeof content;
+  const partTypes = Array.isArray(content)
+    ? content.map((part) => (part && typeof part === "object" ? (part as { type?: string }).type ?? typeof part : typeof part)).join(", ")
+    : "";
+  const choiceKeys = choice && typeof choice === "object" ? Object.keys(choice).join(", ") : "";
+
+  throw new Error(
+    `OpenRouter returned an unexpected response shape. contentType=${contentType || "undefined"}; ` +
+      `partTypes=${partTypes || "n/a"}; choiceKeys=${choiceKeys || "n/a"}`
+  );
+}
+
+function extractTextFromContentPart(part: unknown): string {
+  if (!part) {
+    return "";
+  }
+
+  if (typeof part === "string") {
+    return part;
+  }
+
+  if (typeof part !== "object") {
+    return "";
+  }
+
+  const record = part as {
+    type?: string;
+    text?: string | OpenRouterContentPart[];
+    content?: string | OpenRouterContentPart[];
+  };
+  if (typeof record.type === "string" && /reasoning/i.test(record.type)) {
+    return "";
+  }
+
+  if (typeof record.text === "string") {
+    return record.text;
+  }
+
+  if (typeof record.content === "string") {
+    return record.content;
+  }
+
+  if (Array.isArray(record.text)) {
+    return record.text.map(extractTextFromContentPart).filter(Boolean).join("\n");
+  }
+
+  if (Array.isArray(record.content)) {
+    return record.content.map(extractTextFromContentPart).filter(Boolean).join("\n");
+  }
+
+  return "";
 }
 
 async function parseOpenRouterResponse(response: Response): Promise<unknown> {

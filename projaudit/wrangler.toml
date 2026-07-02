@@ -12,6 +12,7 @@ OPENROUTER_APP_TITLE = "Journal Node ProjAudit"
 GITHUB_API_BASE_URL = "https://api.github.com"
 GITHUB_API_VERSION = "2022-11-28"
 GIST_PUBLIC = "true"
+VALIDATOR_AUDIT_CONTEXT_URL = "https://gist.githubusercontent.com/journalnode/fc0e4005772889cb188a1ad6c2b3a824/raw"
 
 [env.staging]
 name = "journalnode-projaudit-staging"
@@ -26,12 +27,15 @@ OPENROUTER_APP_TITLE = "Journal Node ProjAudit Staging"
 GITHUB_API_BASE_URL = "https://api.github.com"
 GITHUB_API_VERSION = "2022-11-28"
 GIST_PUBLIC = "true"
+VALIDATOR_AUDIT_CONTEXT_URL = "https://gist.githubusercontent.com/journalnode/fc0e4005772889cb188a1ad6c2b3a824/raw"
 
 [env.production]
 name = "journalnode-projaudit"
 workers_dev = false
 routes = [
-  { pattern = "pft.wizbubba.xyz/projaudit/api/*", zone_name = "wizbubba.xyz" }
+  { pattern = "pft.wizbubba.xyz/projaudit/api/*", zone_name = "wizbubba.xyz" },
+  { pattern = "pft.wizbubba.xyz/audit/api/*", zone_name = "wizbubba.xyz" },
+  { pattern = "pft.wizbubba.xyz/api/*", zone_name = "wizbubba.xyz" }
 ]
 
 [env.production.vars]
@@ -43,3 +47,4 @@ OPENROUTER_APP_TITLE = "Journal Node ProjAudit"
 GITHUB_API_BASE_URL = "https://api.github.com"
 GITHUB_API_VERSION = "2022-11-28"
 GIST_PUBLIC = "true"
+VALIDATOR_AUDIT_CONTEXT_URL = "https://gist.githubusercontent.com/journalnode/fc0e4005772889cb188a1ad6c2b3a824/raw"

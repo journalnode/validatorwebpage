@@ -9,6 +9,7 @@ export interface Env {
   GITHUB_API_BASE_URL?: string;
   GITHUB_API_VERSION?: string;
   GIST_PUBLIC?: string;
+  VALIDATOR_AUDIT_CONTEXT_URL?: string;
 }
 
 export interface RuntimeConfig {
@@ -20,6 +21,7 @@ export interface RuntimeConfig {
   githubApiBaseUrl: string;
   githubApiVersion: string;
   gistPublic: boolean;
+  validatorAuditContextUrl: string;
 }
 
 export function getConfig(env: Env): RuntimeConfig {
@@ -31,7 +33,10 @@ export function getConfig(env: Env): RuntimeConfig {
     openRouterAppTitle: env.OPENROUTER_APP_TITLE ?? "Journal Node ProjAudit",
     githubApiBaseUrl: trimTrailingSlash(env.GITHUB_API_BASE_URL ?? "https://api.github.com"),
     githubApiVersion: env.GITHUB_API_VERSION ?? "2022-11-28",
-    gistPublic: (env.GIST_PUBLIC ?? "true").toLowerCase() === "true"
+    gistPublic: (env.GIST_PUBLIC ?? "true").toLowerCase() === "true",
+    validatorAuditContextUrl:
+      env.VALIDATOR_AUDIT_CONTEXT_URL ??
+      "https://gist.githubusercontent.com/journalnode/fc0e4005772889cb188a1ad6c2b3a824/raw"
   };
 }
 

@@ -1,4 +1,5 @@
 import { getConfig, getSecretStatus, type Env } from "./env";
+import { AUDIT_MODELS, runValidatorAudit, type ValidatorAuditRequest } from "./audit/validator";
 import { checkGitHubAuth } from "./integrations/github";
 import { checkOpenRouterAuth } from "./integrations/openrouter";
 import { json, methodNotAllowed, notFound } from "./http";
@@ -15,11 +16,25 @@ export default {
         ok: true,
         service: "journalnode-projaudit",
         app_env: config.appEnv,
-        routes: ["/health", "/projaudit/health", "/projaudit/integrations", "/projaudit/audit"]
+        routes: [
+          "/health",
+          "/audit/health",
+          "/audit/run",
+          "/projaudit/health",
+          "/projaudit/integrations",
+          "/projaudit/audit"
+        ]
       });
     }
 
-    if (pathname === "/health" || pathname === "/projaudit/health" || pathname === "/projaudit/api/health") {
+    if (
+      pathname === "/health" ||
+      pathname === "/api/health" ||
+      pathname === "/audit/health" ||
+      pathname === "/audit/api/health" ||
+      pathname === "/projaudit/health" ||
+      pathname === "/projaudit/api/health"
+    ) {
       if (request.method !== "GET") {
         return methodNotAllowed(["GET"]);
       }
@@ -32,7 +47,13 @@ export default {
         timestamp: new Date().toISOString(),
         runtime: "cloudflare-workers",
         secrets: getSecretStatus(env),
-        audit_logic: "not_implemented"
+        audit: {
+          status: "ported_from_tasknode_agent",
+          models: AUDIT_MODELS
+        },
+        projaudit: {
+          status: "scaffold_only"
+        }
       });
     }
 
@@ -55,6 +76,30 @@ export default {
           github
         }
       });
+    }
+
+    if (pathname === "/audit/run" || pathname === "/audit/api/run" || pathname === "/api/audit") {
+      if (request.method !== "POST") {
+        return methodNotAllowed(["POST"]);
+      }
+
+      if (!env.OPENROUTER_API_KEY || !env.GITHUB_TOKEN) {
+        return json(
+          {
+            ok: false,
+            status: "INTEGRATION_NOT_CONFIGURED",
+            message:
+              "The /audit engine is hosted, but OPENROUTER_API_KEY and GITHUB_TOKEN Worker secrets must be configured before running audits.",
+            secrets: getSecretStatus(env)
+          },
+          { status: 503 }
+        );
+      }
+
+      const body = await readJsonBody<ValidatorAuditRequest>(request);
+      const result = await runValidatorAudit(env, config, body ?? {});
+
+      return json(result, { status: result.ok ? 200 : 400 });
     }
 
     if (pathname === "/projaudit/audit" || pathname === "/projaudit/api/audit") {
