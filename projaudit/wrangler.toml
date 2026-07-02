@@ -1,0 +1,45 @@
+name = "journalnode-projaudit"
+main = "src/index.ts"
+compatibility_date = "2026-07-02"
+workers_dev = true
+
+[vars]
+APP_ENV = "development"
+OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
+OPENROUTER_MODEL = "openai/gpt-5.2"
+OPENROUTER_SITE_URL = "https://pft.wizbubba.xyz"
+OPENROUTER_APP_TITLE = "Journal Node ProjAudit"
+GITHUB_API_BASE_URL = "https://api.github.com"
+GITHUB_API_VERSION = "2022-11-28"
+GIST_PUBLIC = "true"
+
+[env.staging]
+name = "journalnode-projaudit-staging"
+workers_dev = true
+
+[env.staging.vars]
+APP_ENV = "staging"
+OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
+OPENROUTER_MODEL = "openai/gpt-5.2"
+OPENROUTER_SITE_URL = "https://pft.wizbubba.xyz"
+OPENROUTER_APP_TITLE = "Journal Node ProjAudit Staging"
+GITHUB_API_BASE_URL = "https://api.github.com"
+GITHUB_API_VERSION = "2022-11-28"
+GIST_PUBLIC = "true"
+
+[env.production]
+name = "journalnode-projaudit"
+workers_dev = false
+routes = [
+  { pattern = "pft.wizbubba.xyz/projaudit/api/*", zone_name = "wizbubba.xyz" }
+]
+
+[env.production.vars]
+APP_ENV = "production"
+OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
+OPENROUTER_MODEL = "openai/gpt-5.2"
+OPENROUTER_SITE_URL = "https://pft.wizbubba.xyz"
+OPENROUTER_APP_TITLE = "Journal Node ProjAudit"
+GITHUB_API_BASE_URL = "https://api.github.com"
+GITHUB_API_VERSION = "2022-11-28"
+GIST_PUBLIC = "true"
