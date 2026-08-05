@@ -4,17 +4,17 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Post Fiat Validator | wizbubba | nHUzc5XzsmweRV6aNyUQJD5eRUM4TT4tVCBv5DKx6T7Buq4gn9Lr</title>
-  <meta name="description" content="Public verification surface for the Post Fiat validator operated by @wizbubba. Verify the validator public key, change log, status, and third-party proof links.">
+  <meta name="description" content="Public verification surface and Audit Suite for the Post Fiat validator operated by @wizbubba. Verify validator identity, inspect status, and probe the /projaudit pipeline.">
   <link rel="canonical" href="https://pft.wizbubba.xyz/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Post Fiat Validator | wizbubba">
-  <meta property="og:description" content="Verify the public key, status, change log, and external proof surfaces for this Post Fiat validator.">
+  <meta property="og:description" content="Verify the public key, status, and external proof surfaces for this Post Fiat validator, then probe the /projaudit Audit Suite pipeline.">
   <meta property="og:url" content="https://pft.wizbubba.xyz/">
   <meta property="og:image" content="https://pft.wizbubba.xyz/assets/graphic.jpg">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Post Fiat Validator | wizbubba">
-  <meta name="twitter:description" content="Public trust surface for validator identity, verification, and status.">
-  <meta name="theme-color" content="#0f1210">
+  <meta name="twitter:description" content="Public trust surface for validator identity, verification, live status, and the /projaudit Audit Suite.">
+  <meta name="theme-color" content="#080a0a">
   <style>
     :root {
       --bg: #f5f1e8;
@@ -524,6 +524,625 @@
       }
     }
   </style>
+  <style id="consensus-interface">
+    @property --signal-angle {
+      syntax: "<angle>";
+      inherits: false;
+      initial-value: 0deg;
+    }
+
+    :root {
+      color-scheme: dark;
+      --bg: #080a0a;
+      --ink: #f2f5f1;
+      --muted: #9ca7a2;
+      --accent: #ff4d20;
+      --cyan: #55e6df;
+      --acid: #c7ff45;
+      --line: rgba(233, 244, 238, 0.16);
+      --line-hot: rgba(85, 230, 223, 0.46);
+      --panel: rgba(11, 15, 14, 0.72);
+      --panel-strong: rgba(16, 21, 19, 0.92);
+      --content-width: 1440px;
+      --sans: "Arial Narrow", "Roboto Condensed", "Aptos Narrow", "Segoe UI", sans-serif;
+      --mono: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+      --radius-lg: 4px;
+      --radius-md: 3px;
+      --radius-sm: 2px;
+      --mx: 50%;
+      --my: 30%;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      scrollbar-color: var(--cyan) #080a0a;
+      scrollbar-width: thin;
+    }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      color: var(--ink);
+      background: var(--bg);
+      font-family: var(--sans);
+      line-height: 1.5;
+      letter-spacing: 0;
+      overflow-x: clip;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      z-index: -1;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle 20rem at var(--mx) var(--my), rgba(85, 230, 223, 0.06), transparent 72%),
+        linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+      background-size: auto, 44px 44px, 44px 44px;
+      mask-image: linear-gradient(to bottom, black, transparent 92%);
+    }
+
+    #network-canvas {
+      position: fixed;
+      z-index: -2;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background:
+        radial-gradient(circle at 72% 18%, rgba(255, 77, 32, 0.15), transparent 25%),
+        radial-gradient(circle at 15% 55%, rgba(85, 230, 223, 0.1), transparent 32%),
+        #080a0a;
+      pointer-events: none;
+    }
+
+    .scroll-progress {
+      position: fixed;
+      z-index: 20;
+      inset: 0 0 auto;
+      height: 2px;
+      background: linear-gradient(90deg, var(--cyan), var(--acid), var(--accent));
+      transform: scaleX(0);
+      transform-origin: left;
+      animation: page-progress linear;
+      animation-timeline: scroll(root block);
+    }
+
+    @keyframes page-progress { to { transform: scaleX(1); } }
+
+    ::selection { color: #050706; background: var(--cyan); }
+    a { color: inherit; overflow-wrap: anywhere; }
+    a:focus-visible { outline: 2px solid var(--acid); outline-offset: 4px; }
+    img { display: block; max-width: 100%; }
+    code { font-family: var(--mono); font-size: 0.9em; }
+
+    .shell {
+      width: min(calc(100% - 56px), var(--content-width));
+      margin: 0 auto;
+      padding: 20px 0 88px;
+    }
+
+    .topbar {
+      position: sticky;
+      z-index: 15;
+      top: 12px;
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      align-items: center;
+      gap: 24px;
+      min-height: 56px;
+      margin: 0 0 28px;
+      padding: 8px 10px 8px 18px;
+      border: 1px solid var(--line);
+      border-radius: 3px;
+      background: rgba(7, 10, 9, 0.76);
+      box-shadow: 0 14px 50px rgba(0,0,0,0.34);
+      backdrop-filter: blur(22px) saturate(1.25);
+    }
+
+    .topbar::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      position: absolute;
+      left: 0;
+      top: 0;
+      background: var(--acid);
+      box-shadow: 0 0 20px var(--acid);
+    }
+
+    .topbar-title,
+    .eyebrow,
+    .section-kicker,
+    .fact-card dt,
+    .status-label {
+      font-family: var(--mono);
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .topbar-title { color: var(--ink); font-size: 0.7rem; white-space: nowrap; }
+    .topbar-nav { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 2px; }
+
+    .pill-link {
+      position: relative;
+      padding: 8px 11px;
+      border: 0;
+      border-radius: 2px;
+      background: transparent;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: color 180ms ease, background 180ms ease;
+    }
+
+    .pill-link::after {
+      content: "";
+      position: absolute;
+      inset: auto 10px 4px;
+      height: 1px;
+      background: var(--cyan);
+      transform: scaleX(0);
+      transition: transform 180ms ease;
+    }
+
+    .pill-link:hover,
+    .pill-link:focus-visible { color: var(--ink); background: rgba(255,255,255,0.05); transform: none; }
+    .pill-link:hover::after,
+    .pill-link:focus-visible::after { transform: scaleX(1); }
+
+    .hero-grid {
+      position: relative;
+      isolation: isolate;
+      display: grid;
+      grid-template-columns: minmax(0, 1.18fr) minmax(330px, 0.82fr);
+      align-items: end;
+      gap: clamp(24px, 5vw, 88px);
+      min-height: min(760px, calc(100svh - 180px));
+      margin: 0 0 96px;
+      padding: clamp(36px, 6vw, 88px) clamp(0px, 3vw, 48px);
+      overflow: visible;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      backdrop-filter: none;
+    }
+
+    .hero-grid::before {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      inset: 8% -4vw -3%;
+      border-block: 1px solid var(--line);
+      background: linear-gradient(90deg, rgba(8,10,10,0.9), rgba(8,10,10,0.32) 58%, rgba(8,10,10,0.72));
+      clip-path: polygon(0 0, 94% 0, 100% 12%, 100% 100%, 6% 100%, 0 88%);
+    }
+
+    .hero-grid::after {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      top: 8%;
+      right: -4vw;
+      width: 36%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent));
+      box-shadow: 0 0 20px var(--accent);
+    }
+
+    .hero-copy { display: flex; flex-direction: column; gap: 22px; align-self: center; min-width: 0; }
+    .eyebrow { margin: 0; color: var(--cyan); font-size: 0.72rem; }
+
+    h1, h2, h3 { margin: 0; font-weight: 680; letter-spacing: 0; }
+    h1 {
+      max-width: 10.5ch;
+      font-size: clamp(3.4rem, 7.4vw, 7.8rem);
+      line-height: 0.84;
+      text-wrap: balance;
+    }
+
+    h2 { font-size: clamp(1.6rem, 3vw, 3.1rem); line-height: 0.96; }
+    .lede { margin: 0; max-width: 68ch; color: #bdc6c1; font-size: clamp(0.98rem, 1.2vw, 1.12rem); }
+    .lede code { color: var(--acid); }
+
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 52px;
+      padding: 0 18px;
+      border: 1px solid var(--line);
+      border-radius: 2px;
+      font-family: var(--mono);
+      font-size: 0.76rem;
+      font-weight: 600;
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: color 180ms ease, border-color 180ms ease, background 180ms ease, transform 180ms ease;
+    }
+
+    .button::after { content: "↗"; font-size: 1rem; }
+    .button-secondary::after { content: "→"; }
+    .button-primary { color: #07100e; background: var(--cyan); border-color: var(--cyan); box-shadow: 0 0 30px rgba(85,230,223,0.14); }
+    .button-secondary { color: var(--ink); background: rgba(255,255,255,0.03); }
+    .button:hover { transform: translateY(-2px); border-color: var(--acid); }
+    .button-primary:hover { background: var(--acid); color: #07100e; }
+
+    .signal-strip { display: flex; flex-wrap: wrap; gap: 7px; }
+    .signal {
+      position: relative;
+      padding: 7px 10px 7px 24px;
+      border: 1px solid var(--line);
+      border-radius: 2px;
+      background: rgba(0,0,0,0.18);
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 0.66rem;
+      text-transform: uppercase;
+    }
+    .signal::before { content: ""; position: absolute; left: 10px; top: 50%; width: 5px; height: 5px; background: var(--acid); transform: translateY(-50%); box-shadow: 0 0 10px var(--acid); }
+
+    .hero-proof { display: grid; align-self: center; gap: 22px; min-width: 0; }
+    .hero-card { display: grid; gap: 12px; padding: 0; border: 0; border-radius: 0; background: transparent; }
+    .hero-card figure { position: relative; margin: 0; overflow: hidden; border-block: 1px solid var(--line); }
+    .hero-card figure::after { content: ""; position: absolute; inset: 0; background: linear-gradient(115deg, transparent 30%, rgba(85,230,223,0.14), transparent 70%); transform: translateX(-120%); animation: proof-scan 5.5s ease-in-out infinite; }
+    .hero-card img {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: 0;
+      object-fit: cover;
+      filter: invert(1) contrast(1.12);
+      mix-blend-mode: screen;
+      opacity: 0.92;
+      box-shadow: none;
+    }
+    @keyframes proof-scan { 45%, 100% { transform: translateX(120%); } }
+    .caption { margin: 0; color: var(--muted); font-size: 0.82rem; }
+    .caption a { color: var(--cyan); text-underline-offset: 4px; }
+    .hero-card h2 { color: var(--accent); font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.12em; text-transform: uppercase; }
+
+    .main-grid { display: grid; gap: 0; counter-reset: surface; }
+    .section {
+      position: relative;
+      container-type: inline-size;
+      padding: clamp(52px, 7vw, 108px) clamp(0px, 2vw, 28px);
+      border: 0;
+      border-top: 1px solid var(--line);
+      border-radius: 0;
+      background: linear-gradient(90deg, rgba(8,10,10,0.82), rgba(8,10,10,0.58));
+      box-shadow: none;
+      backdrop-filter: blur(5px);
+      counter-increment: surface;
+    }
+    .section::before { content: ""; position: absolute; top: -1px; left: 0; width: clamp(48px, 12vw, 180px); height: 2px; background: var(--cyan); box-shadow: 0 0 18px rgba(85,230,223,0.7); }
+    .section:nth-child(3n+2)::before { background: var(--accent); box-shadow: 0 0 18px rgba(255,77,32,0.7); }
+    .section:nth-child(3n)::before { background: var(--acid); box-shadow: 0 0 18px rgba(199,255,69,0.6); }
+    .section-head { display: grid; grid-template-columns: minmax(180px, 0.42fr) 1fr; column-gap: clamp(24px, 6vw, 100px); align-items: end; margin: 0 0 clamp(32px, 5vw, 64px); }
+    .section-kicker { grid-row: span 2; align-self: start; margin: 4px 0 0; color: var(--cyan); font-size: 0.68rem; }
+    .section-head h2 { margin: 0 0 14px; max-width: 18ch; }
+    .section-summary { margin: 0; max-width: 74ch; color: var(--muted); font-size: 0.94rem; }
+
+    .facts-grid, .status-grid, .proof-grid, .faq-grid, .footer-grid { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); }
+    .facts-grid, .status-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .proof-grid, .faq-grid, .footer-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    .fact-card, .status-card, .proof-card, .faq-card, .footer-card {
+      position: relative;
+      min-width: 0;
+      margin: 0;
+      padding: clamp(18px, 2.4vw, 32px);
+      overflow: hidden;
+      border: 0;
+      border-radius: 0;
+      background: rgba(10, 14, 13, 0.91);
+      transition: background 220ms ease;
+    }
+    .fact-card:hover, .status-card:hover, .proof-card:hover, .faq-card:hover, .footer-card:hover { background: rgba(18, 25, 22, 0.96); }
+    .fact-card::after, .status-card::after, .proof-card::after, .faq-card::after { content: ""; position: absolute; inset: auto 0 0; height: 1px; background: linear-gradient(90deg, var(--cyan), transparent); transform: scaleX(0); transform-origin: left; transition: transform 240ms ease; }
+    .fact-card:hover::after, .status-card:hover::after, .proof-card:hover::after, .faq-card:hover::after { transform: scaleX(1); }
+
+    .fact-card dt, .status-label { margin: 0 0 14px; color: var(--muted); font-size: 0.64rem; }
+    .fact-card dd, .status-value { margin: 0; color: var(--ink); font-size: 1rem; font-weight: 600; }
+    .fact-card dd.small, .status-note, .proof-card p, .faq-card p, .footer-card p, .list-note { color: var(--muted); font-size: 0.86rem; font-weight: 400; }
+    .fact-card dd.small { margin-top: 10px; }
+    .mono-value { font-family: var(--mono); font-size: 0.78rem; line-height: 1.7; word-break: break-word; }
+    .status-card::before { content: none; }
+    .status-good { color: var(--acid) !important; }
+    .status-inline { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .status-dot { width: 7px; height: 7px; border-radius: 0; background: var(--acid); box-shadow: 0 0 12px var(--acid); animation: pulse-dot 1.8s steps(2) infinite; }
+    @keyframes pulse-dot { 50% { opacity: 0.25; } }
+    .status-loading { opacity: 0.6; }
+
+    .proof-card h3, .faq-card h3, .footer-card h3 { margin: 0 0 14px; font-size: 1rem; line-height: 1.15; }
+    .proof-card p, .faq-card p, .footer-card p { margin: 0; }
+    .proof-card a, .footer-card a, .inline-link { color: var(--cyan); text-decoration-thickness: 1px; text-underline-offset: 4px; }
+    .proof-card a:hover, .footer-card a:hover, .inline-link:hover { color: var(--acid); }
+
+    .journal-layout { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr); gap: 1px; align-items: stretch; border: 1px solid var(--line); background: var(--line); }
+    .journal-box, .journal-side { min-width: 0; padding: clamp(24px, 4vw, 52px); border: 0; border-radius: 0; background: rgba(10,14,13,0.92); }
+    .journal-box p, .journal-side p, .journal-side ul { margin: 0; color: var(--muted); }
+    .journal-box p { max-width: 48ch; color: var(--ink); font-size: clamp(1.1rem, 2vw, 1.6rem); line-height: 1.35; }
+    .journal-side ul { padding-left: 18px; }
+    .journal-side li + li { margin-top: 8px; }
+
+    .endpoint-list { display: grid; gap: 1px; margin: 0; border: 1px solid var(--line); background: var(--line); }
+    .endpoint-item { min-width: 0; padding: 22px 24px; border: 0; border-radius: 0; background: rgba(10,14,13,0.92); color: var(--muted); }
+    .endpoint-item strong { display: block; margin-bottom: 6px; font-family: var(--mono); font-size: 0.82rem; }
+
+    .audit-suite-layout {
+      display: grid;
+      grid-template-columns: minmax(240px, 0.64fr) minmax(0, 1.36fr);
+      gap: 1px;
+      border: 1px solid var(--line);
+      background: var(--line);
+    }
+    .audit-brief,
+    .audit-console {
+      min-width: 0;
+      padding: clamp(24px, 4vw, 52px);
+      background: rgba(10, 14, 13, 0.94);
+    }
+    .audit-brief {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 48px;
+      background:
+        linear-gradient(145deg, rgba(85,230,223,0.08), transparent 42%),
+        rgba(10, 14, 13, 0.96);
+    }
+    .audit-command {
+      margin: 0;
+      color: var(--acid);
+      font-family: var(--mono);
+      font-size: clamp(1.6rem, 3vw, 3.4rem);
+      letter-spacing: -0.06em;
+      line-height: 1;
+    }
+    .audit-brief-copy { margin: 18px 0 0; max-width: 38ch; color: var(--muted); }
+    .audit-stages {
+      display: grid;
+      gap: 12px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      counter-reset: audit-stage;
+    }
+    .audit-stages li {
+      display: grid;
+      grid-template-columns: 2.4rem 1fr;
+      align-items: baseline;
+      gap: 12px;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      counter-increment: audit-stage;
+    }
+    .audit-stages li::before {
+      content: "0" counter(audit-stage);
+      color: var(--cyan);
+    }
+
+    .audit-form { display: grid; gap: 26px; }
+    .audit-mode-switch { margin: 0; padding: 0; border: 0; }
+    .audit-mode-switch legend,
+    .audit-label,
+    .audit-result-label {
+      display: block;
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 0.66rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .audit-mode-options {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1px;
+      padding: 1px;
+      background: var(--line);
+    }
+    .audit-mode-option {
+      position: relative;
+      display: flex;
+      align-items: center;
+      min-height: 50px;
+      padding: 12px 16px;
+      background: rgba(7, 10, 9, 0.92);
+      color: var(--muted);
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: 0.74rem;
+      transition: color 160ms ease, background 160ms ease;
+    }
+    .audit-mode-option:has(input:checked) {
+      color: #06100e;
+      background: var(--cyan);
+    }
+    .audit-mode-option input {
+      width: 16px;
+      height: 16px;
+      margin: 0 10px 0 0;
+      accent-color: var(--acid);
+    }
+    .audit-mode-option:focus-within { outline: 2px solid var(--acid); outline-offset: 3px; }
+
+    .audit-panel[hidden] { display: none; }
+    .audit-panel { display: grid; gap: 18px; }
+    .audit-input-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+    .audit-field { min-width: 0; }
+    .audit-field-wide { grid-column: 1 / -1; }
+    .audit-field input,
+    .audit-field textarea {
+      width: 100%;
+      min-height: 52px;
+      padding: 14px 15px;
+      border: 1px solid var(--line);
+      border-radius: 2px;
+      outline: 0;
+      background: rgba(4, 7, 6, 0.78);
+      color: var(--ink);
+      caret-color: var(--acid);
+      font: 0.82rem/1.5 var(--mono);
+      transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+    .audit-field textarea { min-height: 112px; resize: vertical; }
+    .audit-field input::placeholder,
+    .audit-field textarea::placeholder { color: #6f7b75; }
+    .audit-field input:focus,
+    .audit-field textarea:focus {
+      border-color: var(--cyan);
+      background: rgba(8, 14, 12, 0.98);
+      box-shadow: 0 0 0 3px rgba(85,230,223,0.11);
+    }
+    .audit-hint { margin: 8px 0 0; color: var(--muted); font-size: 0.76rem; }
+
+    .audit-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+    .audit-submit {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 52px;
+      padding: 0 20px;
+      border: 1px solid var(--acid);
+      border-radius: 2px;
+      background: var(--acid);
+      color: #081006;
+      font-family: var(--mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+    }
+    .audit-submit:hover { transform: translateY(-2px); background: var(--cyan); border-color: var(--cyan); }
+    .audit-submit:focus-visible { outline: 2px solid var(--cyan); outline-offset: 4px; }
+    .audit-submit:disabled { cursor: wait; opacity: 0.55; transform: none; }
+    .audit-form-status {
+      margin: 0;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 0.74rem;
+    }
+    .audit-form-status::before {
+      content: "";
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      margin-right: 9px;
+      background: #6f7b75;
+    }
+    .audit-form-status[data-state="loading"]::before { background: var(--cyan); animation: pulse-dot 0.8s steps(2) infinite; }
+    .audit-form-status[data-state="success"] { color: var(--acid); }
+    .audit-form-status[data-state="success"]::before { background: var(--acid); box-shadow: 0 0 12px rgba(199,255,69,0.6); }
+    .audit-form-status[data-state="error"] { color: #ff8d72; }
+    .audit-form-status[data-state="error"]::before { background: var(--accent); }
+
+    .audit-result {
+      position: relative;
+      min-height: 186px;
+      padding: 22px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background:
+        linear-gradient(rgba(85,230,223,0.025) 1px, transparent 1px),
+        rgba(4, 7, 6, 0.82);
+      background-size: 100% 24px;
+    }
+    .audit-result::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 2px;
+      background: var(--cyan);
+    }
+    .audit-result[data-state="success"]::before { background: var(--acid); }
+    .audit-result[data-state="error"]::before { background: var(--accent); }
+    .audit-result pre {
+      min-height: 108px;
+      margin: 0;
+      overflow: auto;
+      color: #c8d2cd;
+      font: 0.76rem/1.65 var(--mono);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .footer-grid { margin-top: 0; padding: 1px; border: 0; border-top: 1px solid var(--line); border-radius: 0; background: var(--line); box-shadow: none; backdrop-filter: blur(5px); }
+    .footer-card { min-height: 160px; }
+
+    @container (max-width: 920px) {
+      .facts-grid, .status-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .proof-grid, .faq-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @supports (animation-timeline: view()) {
+      .section-head, .fact-card, .status-card, .proof-card, .faq-card, .journal-box, .journal-side, .endpoint-item {
+        animation: surface-enter both linear;
+        animation-timeline: view();
+        animation-range: entry 5% cover 28%;
+      }
+      @keyframes surface-enter {
+        from { opacity: 0.18; transform: translateY(28px); filter: blur(5px); }
+        to { opacity: 1; transform: translateY(0); filter: blur(0); }
+      }
+    }
+
+    @media (max-width: 980px) {
+      .shell { width: min(calc(100% - 32px), var(--content-width)); }
+      .topbar { grid-template-columns: 1fr; gap: 4px; align-items: start; border-radius: 3px; }
+      .topbar-nav { justify-content: flex-start; }
+      .hero-grid { grid-template-columns: 1fr; min-height: auto; padding-top: 72px; }
+      .hero-copy { min-height: 62svh; justify-content: center; }
+      h1 { max-width: 11ch; }
+      .hero-proof { grid-template-columns: minmax(0, 1.1fr) minmax(240px, 0.9fr); align-items: center; }
+      .section-head { grid-template-columns: 1fr; }
+      .section-kicker { grid-row: auto; margin-bottom: 18px; }
+      .audit-suite-layout { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 680px) {
+      .shell { width: min(calc(100% - 20px), var(--content-width)); padding-top: 10px; }
+      .topbar { position: relative; top: 0; padding: 12px; }
+      .topbar-nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; gap: 1px; background: var(--line); }
+      .pill-link { width: auto; padding: 9px; background: rgba(8,10,10,0.9); text-align: left; }
+      .hero-grid { margin-bottom: 54px; padding: 48px 4px 32px; gap: 44px; }
+      .hero-grid::before { inset-inline: -10px; clip-path: polygon(0 0, 92% 0, 100% 5%, 100% 100%, 8% 100%, 0 95%); }
+      .hero-copy { min-height: 62svh; gap: 18px; }
+      h1 { max-width: 100%; font-size: clamp(2.8rem, 12vw, 4rem); text-wrap: wrap; overflow-wrap: anywhere; }
+      .lede code { word-break: break-all; }
+      .lede { font-size: 0.94rem; }
+      .hero-actions { flex-direction: column; }
+      .hero-actions .button { width: 100%; }
+      .hero-proof { grid-template-columns: 1fr; }
+      .hero-card img { aspect-ratio: 1 / 0.82; }
+      .section { padding: 60px 4px; }
+      .section-head { margin-bottom: 32px; }
+      .facts-grid, .status-grid, .proof-grid, .faq-grid { grid-template-columns: 1fr; }
+      .journal-layout { grid-template-columns: 1fr; }
+      .audit-input-grid, .audit-mode-options { grid-template-columns: 1fr; }
+      .fact-card, .status-card, .proof-card, .faq-card { padding: 22px; }
+      .signal-strip { display: grid; }
+      .footer-card { min-height: 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+      .section-head, .fact-card, .status-card, .proof-card, .faq-card, .journal-box, .journal-side, .endpoint-item { opacity: 1 !important; transform: none !important; filter: none !important; }
+    }
+  </style>
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -549,6 +1168,25 @@
           "sameAs": [
             "https://x.com/WizBubba"
           ]
+        },
+        {
+          "@type": "WebApplication",
+          "name": "Post Fiat /projaudit Audit Suite",
+          "url": "https://pft.wizbubba.xyz/#audit-suite",
+          "applicationCategory": "DeveloperApplication",
+          "operatingSystem": "Web",
+          "description": "A browser interface for validating a single URL or a bundle of project surfaces against the hosted /projaudit pipeline.",
+          "featureList": [
+            "Single URL audit input",
+            "Multi-surface project input",
+            "Client-side URL validation",
+            "Structured pipeline response display"
+          ],
+          "isPartOf": {
+            "@type": "WebSite",
+            "name": "Post Fiat Validator | wizbubba",
+            "url": "https://pft.wizbubba.xyz/"
+          }
         },
         {
           "@type": "FAQPage",
@@ -584,6 +1222,8 @@
   </script>
 </head>
 <body>
+  <canvas id="network-canvas" aria-hidden="true"></canvas>
+  <div class="scroll-progress" aria-hidden="true"></div>
   <div class="shell">
     <nav class="topbar" aria-label="Primary">
       <div class="topbar-title">Validator Trust Surface</div>
@@ -591,6 +1231,7 @@
         <a class="pill-link" href="#validator-facts">Facts</a>
         <a class="pill-link" href="#verification">Verification</a>
         <a class="pill-link" href="#live-status">Live Status</a>
+        <a class="pill-link" href="#audit-suite">Audit Suite</a>
         <a class="pill-link" href="/journal-node">Journal Node</a>
         <a class="pill-link" href="/change-log/">Change Log</a>
         <a class="pill-link" href="https://x.com/WizBubba" target="_blank" rel="noopener">@wizbubba</a>
@@ -645,7 +1286,7 @@
           <dl class="fact-card"><dt>Domain proof</dt><dd><a class="inline-link" href="/.well-known/pft-ledger.toml">/.well-known/pft-ledger.toml</a></dd></dl>
           <dl class="fact-card"><dt>Status</dt><dd id="facts-status" class="status-loading">Awaiting explorer data</dd></dl>
           <dl class="fact-card"><dt>Version</dt><dd id="facts-version" class="status-loading">Awaiting explorer data</dd></dl>
-          <dl class="fact-card"><dt>Location</dt><dd>North America</dd></dl>
+          <dl class="fact-card"><dt>Location</dt><dd>South Africa</dd></dl>
           <dl class="fact-card"><dt>Last updated</dt><dd><time datetime="2026-04-03">2026-04-03</time></dd><dd class="small">Live status fields update from the explorer source at page load when available.</dd></dl>
         </div>
       </section>
@@ -683,6 +1324,90 @@
           <article class="status-card"><p class="status-label">Agreement (24H)</p><p class="status-value" data-field="agreement_24h">Unavailable</p></article>
           <article class="status-card"><p class="status-label">Agreement (30D)</p><p class="status-value" data-field="agreement_30d">Unavailable</p></article>
           <article class="status-card"><p class="status-label">Last status refresh</p><p class="status-value" data-field="last_refresh">Unavailable</p><p class="status-note">Source: <a class="inline-link" href="https://explorer.testnet.postfiat.org/validators/nHUzc5XzsmweRV6aNyUQJD5eRUM4TT4tVCBv5DKx6T7Buq4gn9Lr/details" target="_blank" rel="noopener">approved explorer details page</a>.</p></article>
+        </div>
+      </section>
+
+      <section class="section" id="audit-suite" aria-labelledby="audit-suite-heading" itemscope itemtype="https://schema.org/WebApplication">
+        <meta itemprop="applicationCategory" content="DeveloperApplication">
+        <meta itemprop="operatingSystem" content="Web">
+        <div class="section-head">
+          <p class="section-kicker">Project intelligence</p>
+          <h2 id="audit-suite-heading" itemprop="name">Audit Suite</h2>
+          <p class="section-summary" itemprop="description">Probe the hosted <code>/projaudit</code> pipeline with one canonical URL or a bundle of project surfaces. Inputs are validated in-browser, sent as JSON, and rendered below as a structured response.</p>
+        </div>
+
+        <div class="audit-suite-layout">
+          <aside class="audit-brief" aria-label="Audit pipeline overview">
+            <div>
+              <p class="audit-command" aria-label="projaudit command">/projaudit</p>
+              <p class="audit-brief-copy">One interface for turning public project surfaces into an explicit, inspectable audit request. The current staging contract returns a scaffold response while the full audit pipeline is brought online.</p>
+            </div>
+            <ol class="audit-stages" aria-label="Audit pipeline stages">
+              <li>Validate input</li>
+              <li>Normalize surfaces</li>
+              <li>Reach staging worker</li>
+              <li>Render response</li>
+            </ol>
+          </aside>
+
+          <div class="audit-console">
+            <form class="audit-form" id="projaudit-form" data-endpoint="/projaudit/api/audit" novalidate>
+              <fieldset class="audit-mode-switch">
+                <legend>Input mode</legend>
+                <div class="audit-mode-options">
+                  <label class="audit-mode-option">
+                    <input type="radio" name="audit-mode" value="url" checked>
+                    Single URL
+                  </label>
+                  <label class="audit-mode-option">
+                    <input type="radio" name="audit-mode" value="surfaces">
+                    Surface bundle
+                  </label>
+                </div>
+              </fieldset>
+
+              <div class="audit-panel" data-mode-panel="url">
+                <div class="audit-field">
+                  <label class="audit-label" for="audit-url">Canonical project URL</label>
+                  <input id="audit-url" name="url" type="url" inputmode="url" autocomplete="url" placeholder="https://example.org" required aria-describedby="audit-url-hint">
+                  <p class="audit-hint" id="audit-url-hint">Use a public HTTP or HTTPS page that represents the project.</p>
+                </div>
+              </div>
+
+              <div class="audit-panel" data-mode-panel="surfaces" hidden>
+                <div class="audit-input-grid">
+                  <div class="audit-field">
+                    <label class="audit-label" for="surface-website">Website</label>
+                    <input id="surface-website" name="surface-website" type="url" inputmode="url" autocomplete="url" placeholder="https://example.org">
+                  </div>
+                  <div class="audit-field">
+                    <label class="audit-label" for="surface-repository">Repository</label>
+                    <input id="surface-repository" name="surface-repository" type="url" inputmode="url" placeholder="https://github.com/org/repo">
+                  </div>
+                  <div class="audit-field audit-field-wide">
+                    <label class="audit-label" for="surface-proof">Proof or documentation</label>
+                    <input id="surface-proof" name="surface-proof" type="url" inputmode="url" placeholder="https://docs.example.org">
+                    <p class="audit-hint">Add at least one surface. Empty fields are omitted from the request.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="audit-field">
+                <label class="audit-label" for="audit-brief">Audit brief <span aria-hidden="true">·</span> optional</label>
+                <textarea id="audit-brief" name="brief" maxlength="600" placeholder="Name the trust, identity, usability, or machine-readability questions this audit should prioritize."></textarea>
+              </div>
+
+              <div class="audit-actions">
+                <button class="audit-submit" id="audit-submit" type="submit">Run staging probe</button>
+                <p class="audit-form-status" id="audit-form-status" data-state="idle" role="status" aria-live="polite">Ready for validated input</p>
+              </div>
+
+              <div class="audit-result" id="audit-result" data-state="idle" aria-labelledby="audit-result-heading">
+                <span class="audit-result-label" id="audit-result-heading">Pipeline response</span>
+                <pre id="audit-response" tabindex="0">Awaiting a submission. The response body will appear here without being interpreted or hidden.</pre>
+              </div>
+            </form>
+          </div>
         </div>
       </section>
 
@@ -741,6 +1466,270 @@
       <article class="footer-card"><h3>Page scope</h3><p>This site is a validator trust surface for verification, not a replacement for the explorer or the broader validator board.</p></article>
     </footer>
   </div>
+
+  <script>
+    (function () {
+      var form = document.getElementById("projaudit-form");
+      if (!form) return;
+
+      var modeInputs = Array.from(form.querySelectorAll('input[name="audit-mode"]'));
+      var panels = Array.from(form.querySelectorAll("[data-mode-panel]"));
+      var status = document.getElementById("audit-form-status");
+      var result = document.getElementById("audit-result");
+      var responseOutput = document.getElementById("audit-response");
+      var submit = document.getElementById("audit-submit");
+      var endpoint = form.getAttribute("data-endpoint") || "/projaudit/api/audit";
+      var defaultSubmitLabel = submit.textContent;
+
+      function activeMode() {
+        var selected = modeInputs.find(function (input) { return input.checked; });
+        return selected ? selected.value : "url";
+      }
+
+      function updateMode() {
+        var mode = activeMode();
+        panels.forEach(function (panel) {
+          var active = panel.getAttribute("data-mode-panel") === mode;
+          panel.hidden = !active;
+          panel.querySelectorAll("input").forEach(function (input) {
+            input.disabled = !active;
+          });
+        });
+        setState("idle", "Ready for validated input");
+      }
+
+      function setState(state, message) {
+        status.setAttribute("data-state", state);
+        status.textContent = message;
+        result.setAttribute("data-state", state);
+      }
+
+      function validHttpUrl(value, label) {
+        var trimmed = value.trim();
+        if (!trimmed) return null;
+        try {
+          var parsed = new URL(trimmed);
+          if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+            throw new Error("unsupported protocol");
+          }
+          return parsed.href;
+        } catch (error) {
+          throw new Error(label + " must be a complete HTTP or HTTPS URL.");
+        }
+      }
+
+      function buildPayload() {
+        var mode = activeMode();
+        var payload = { command: "/projaudit" };
+
+        if (mode === "url") {
+          var url = validHttpUrl(document.getElementById("audit-url").value, "Canonical project URL");
+          if (!url) throw new Error("Enter a canonical project URL.");
+          payload.url = url;
+        } else {
+          var surfaces = {};
+          var website = validHttpUrl(document.getElementById("surface-website").value, "Website");
+          var repository = validHttpUrl(document.getElementById("surface-repository").value, "Repository");
+          var proof = validHttpUrl(document.getElementById("surface-proof").value, "Proof or documentation");
+          if (website) surfaces.website = website;
+          if (repository) surfaces.repository = repository;
+          if (proof) surfaces.proof = proof;
+          if (!Object.keys(surfaces).length) throw new Error("Add at least one project surface.");
+          payload.surfaces = surfaces;
+          payload.url = website || repository || proof;
+        }
+
+        var brief = document.getElementById("audit-brief").value.trim();
+        if (brief) payload.brief = brief;
+        return payload;
+      }
+
+      modeInputs.forEach(function (input) {
+        input.addEventListener("change", updateMode);
+      });
+      updateMode();
+
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        var payload;
+        try {
+          payload = buildPayload();
+        } catch (error) {
+          setState("error", error.message);
+          responseOutput.textContent = "Input validation failed.\n\n" + error.message;
+          return;
+        }
+
+        submit.disabled = true;
+        submit.textContent = "Probing pipeline…";
+        setState("loading", "Contacting the hosted /projaudit pipeline");
+        responseOutput.textContent = "Submitting validated JSON payload…";
+
+        fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        })
+          .then(function (response) {
+            return response.json().then(function (data) {
+              return { response: response, data: data };
+            });
+          })
+          .then(function (received) {
+            var expectedScaffold = received.data &&
+              received.data.command === "/projaudit" &&
+              received.data.status === "NOT_IMPLEMENTED";
+            responseOutput.textContent = JSON.stringify(received.data, null, 2);
+
+            if (expectedScaffold) {
+              setState("success", "Staging scaffold reached; placeholder response rendered");
+              return;
+            }
+            if (!received.response.ok) {
+              throw new Error(received.data && received.data.message ? received.data.message : "The audit endpoint returned an error.");
+            }
+            setState("success", "Audit response received and rendered");
+          })
+          .catch(function (error) {
+            setState("error", "Submission failed: " + error.message);
+            responseOutput.textContent = "The pipeline could not be reached.\n\n" + error.message;
+          })
+          .finally(function () {
+            submit.disabled = false;
+            submit.textContent = defaultSubmitLabel;
+          });
+      });
+    }());
+  </script>
+
+  <script>
+    (function () {
+      var canvas = document.getElementById("network-canvas");
+      var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+      var gl = canvas && canvas.getContext("webgl2", {
+        alpha: false,
+        antialias: false,
+        depth: false,
+        powerPreference: "high-performance"
+      });
+
+      document.documentElement.addEventListener("pointermove", function (event) {
+        var x = event.clientX / Math.max(window.innerWidth, 1);
+        var y = event.clientY / Math.max(window.innerHeight, 1);
+        document.documentElement.style.setProperty("--mx", (x * 100).toFixed(2) + "%");
+        document.documentElement.style.setProperty("--my", (y * 100).toFixed(2) + "%");
+        pointerTarget[0] = x;
+        pointerTarget[1] = 1 - y;
+      }, { passive: true });
+
+      var pointerTarget = [0.68, 0.72];
+      if (!gl) return;
+
+      var vertexSource = "#version 300 es\n" +
+        "void main(){\n" +
+        "  vec2 p=vec2((gl_VertexID<<1)&2,gl_VertexID&2);\n" +
+        "  gl_Position=vec4(p*2.0-1.0,0.0,1.0);\n" +
+        "}";
+
+      var fragmentSource = "#version 300 es\n" +
+        "precision highp float;\n" +
+        "uniform vec2 u_resolution;\n" +
+        "uniform vec2 u_pointer;\n" +
+        "uniform float u_time;\n" +
+        "uniform float u_scroll;\n" +
+        "out vec4 outColor;\n" +
+        "float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453123);}\n" +
+        "float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1)),f.x),f.y);}\n" +
+        "float fbm(vec2 p){float v=0.0,a=.5;for(int i=0;i<4;i++){v+=a*noise(p);p=p*2.03+17.13;a*=.5;}return v;}\n" +
+        "float lineSegment(vec2 p,vec2 a,vec2 b){vec2 pa=p-a,ba=b-a;float h=clamp(dot(pa,ba)/dot(ba,ba),0.0,1.0);return length(pa-ba*h);}\n" +
+        "void main(){\n" +
+        "  vec2 uv=gl_FragCoord.xy/u_resolution;\n" +
+        "  vec2 p=uv-.5;p.x*=u_resolution.x/u_resolution.y;\n" +
+        "  float t=u_time*.07;\n" +
+        "  vec2 warp=vec2(fbm(p*2.1+t),fbm(p*2.1-t+31.4))-.5;\n" +
+        "  vec2 q=p+warp*.075;\n" +
+        "  float lattice=0.0,nodes=0.0;\n" +
+        "  vec2 grid=q*7.0;vec2 id=floor(grid);vec2 cell=fract(grid)-.5;\n" +
+        "  for(int j=-1;j<=1;j++){for(int i=-1;i<=1;i++){vec2 o=vec2(i,j);vec2 nid=id+o;vec2 pt=o+vec2(hash(nid),hash(nid+19.7))-.5;pt+=.18*sin(t*5.0+6.2831*vec2(hash(nid+4.2),hash(nid+9.1)));float d=length(cell-pt);nodes+=.005/(d*d+.004);if(i==0&&j==0){vec2 nearPt=vec2(hash(nid+vec2(1,0)),hash(nid+vec2(1,0)+19.7))+.5;float ld=lineSegment(cell,pt,nearPt);lattice+=smoothstep(.018,.0,ld)*.36;}}}\n" +
+        "  vec2 mp=u_pointer-.5;mp.x*=u_resolution.x/u_resolution.y;\n" +
+        "  float pulse=exp(-4.5*length(p-mp))*(.55+.45*sin(20.0*length(p-mp)-u_time*1.7));\n" +
+        "  float ring=smoothstep(.012,.0,abs(fract(length(q+vec2(.38,-.12))*3.4-u_time*.045)-.5)-.485);\n" +
+        "  float beam=pow(max(0.0,1.0-abs(q.y+q.x*.22+.13+warp.x*.15)*8.0),8.0);\n" +
+        "  float grain=hash(gl_FragCoord.xy+fract(u_time)*97.0)-.5;\n" +
+        "  vec3 base=vec3(.018,.026,.023)+vec3(.018,.03,.026)*fbm(q*3.0);\n" +
+        "  vec3 cyan=vec3(.14,.88,.83),red=vec3(1.0,.16,.045),acid=vec3(.66,1.0,.13);\n" +
+        "  vec3 col=base+cyan*(lattice*.16+nodes*.045+pulse*.10)+red*(ring*.16+beam*.12)+acid*nodes*.014;\n" +
+        "  float vignette=1.0-smoothstep(.48,.92,length(p));\n" +
+        "  col*=.58+.42*vignette;col+=grain*.018;\n" +
+        "  outColor=vec4(col,1.0);\n" +
+        "}";
+
+      function compile(type, source) {
+        var shader = gl.createShader(type);
+        gl.shaderSource(shader, source);
+        gl.compileShader(shader);
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+          gl.deleteShader(shader);
+          return null;
+        }
+        return shader;
+      }
+
+      var vertex = compile(gl.VERTEX_SHADER, vertexSource);
+      var fragment = compile(gl.FRAGMENT_SHADER, fragmentSource);
+      if (!vertex || !fragment) return;
+      var program = gl.createProgram();
+      gl.attachShader(program, vertex);
+      gl.attachShader(program, fragment);
+      gl.linkProgram(program);
+      if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return;
+      gl.useProgram(program);
+
+      var resolutionLocation = gl.getUniformLocation(program, "u_resolution");
+      var pointerLocation = gl.getUniformLocation(program, "u_pointer");
+      var timeLocation = gl.getUniformLocation(program, "u_time");
+      var scrollLocation = gl.getUniformLocation(program, "u_scroll");
+      var pointer = pointerTarget.slice();
+      var frame = 0;
+      var start = performance.now();
+
+      function resize() {
+        var scale = Math.min(window.devicePixelRatio || 1, 1.5);
+        var width = Math.max(1, Math.floor(window.innerWidth * scale));
+        var height = Math.max(1, Math.floor(window.innerHeight * scale));
+        if (canvas.width !== width || canvas.height !== height) {
+          canvas.width = width;
+          canvas.height = height;
+          gl.viewport(0, 0, width, height);
+        }
+      }
+
+      function draw(now) {
+        resize();
+        pointer[0] += (pointerTarget[0] - pointer[0]) * 0.055;
+        pointer[1] += (pointerTarget[1] - pointer[1]) * 0.055;
+        gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
+        gl.uniform2f(pointerLocation, pointer[0], pointer[1]);
+        gl.uniform1f(timeLocation, (now - start) / 1000);
+        gl.uniform1f(scrollLocation, window.scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight));
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+        if (!reducedMotion.matches && !document.hidden) frame = requestAnimationFrame(draw);
+      }
+
+      function restart() {
+        cancelAnimationFrame(frame);
+        if (!document.hidden) frame = requestAnimationFrame(draw);
+      }
+
+      document.addEventListener("visibilitychange", restart);
+      reducedMotion.addEventListener("change", restart);
+      window.addEventListener("resize", resize, { passive: true });
+      restart();
+    }());
+  </script>
 
   <script>
     (function () {
